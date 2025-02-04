@@ -2,7 +2,14 @@ namespace AltGen.API.Generate;
 
 static class GenerateEndpoint
 {
-  public static async Task<IResult> HandleAsync([AsParameters] GenerateRequest request, [FromServices] IAltTextProviderFactory factory)
+  const string Route = "/generate";
+
+  public static RouteHandlerBuilder MapGenerateEndpoint(this WebApplication app)
+  {
+    return app.MapPost(Route, HandleAsync).DisableAntiforgery();
+  }
+
+  static async Task<IResult> HandleAsync([AsParameters] GenerateRequest request, [FromServices] IAltTextProviderFactory factory)
   {
     var validationResults = request.Validate(new ValidationContext(request));
 

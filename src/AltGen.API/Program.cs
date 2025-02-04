@@ -18,7 +18,7 @@ app.UseHttpsRedirection();
 
 app.UseStatusCodePages();
 
-app.MapPost("/generate", GenerateEndpoint.HandleAsync).DisableAntiforgery();
+app.MapGenerateEndpoint();
 
 app.Run();
 
