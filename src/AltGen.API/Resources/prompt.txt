@@ -1,0 +1,17 @@
+Generate descriptive alt text that captures the essential visual information of the image. Follow these guidelines:
+
+1. Be concise, but comprehensive (1-2 sentences)
+2. Describe the most important visual elements
+3. Convey the image's purpose or key message
+4. Use objective language
+5. Avoid redundant phrases
+
+Priority details to include:
+- Main subject(s)
+- Action or context
+- Color or distinctive visual characteristics
+- Emotional tone or artistic intent
+
+Exclude unnecessary details like background minutiae or decorative elements unless they are crucial to understanding the image.
+
+Please DO NOT respond with anything over than the alt text.
