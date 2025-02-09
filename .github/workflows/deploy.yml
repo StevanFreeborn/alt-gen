@@ -1,0 +1,55 @@
+name: Deploy
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - '.gitignore'
+      - '.editorconfig'
+      - 'LICENSE.md'
+      - '**/*/README.md'
+      - '**/*/Dockerfile'
+jobs:
+  build:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Create version tag
+        id: version
+        run: echo "version=$(date +%Y.%m.%d.%H%M%S)-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build and push image
+        working-directory: src/AltGen.API
+        run: |
+          TAG=${{ secrets.DOCKERHUB_USERNAME }}/api.altgen.stevanfreeborn.com:${{ steps.version.outputs.version }}
+          docker build -t $TAG .
+          docker push $TAG
+  deploy:
+    name: Deploy to server
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Run image on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker stop api.altgen.stevanfreeborn.com
+            docker rm api.altgen.stevanfreeborn.com
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/api.altgen.stevanfreeborn.com:${{ needs.build.outputs.version }}
+            docker run -d -p 7778:8080 --name api.altgen.stevanfreeborn.com ${{ secrets.DOCKERHUB_USERNAME }}/api.altgen.stevanfreeborn.com:${{ needs.build.outputs.version }}
+

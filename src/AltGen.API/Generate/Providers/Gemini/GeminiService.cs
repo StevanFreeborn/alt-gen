@@ -4,7 +4,8 @@ class GeminiService(HttpClient httpClient) : IGeminiService
 {
   const string BaseUri = "https://generativelanguage.googleapis.com/v1beta/models";
   const string Method = "generateContent";
-  const string ModelId = "gemini-1.5-flash";
+  // TODO: Maybe this is configurable by the user via request
+  const string ModelId = "gemini-2.0-flash";
   const string ApiKeyQueryKey = "key";
 
   // TODO: Use Lazy<T> to load the prompt resource
@@ -52,6 +53,8 @@ class GeminiService(HttpClient httpClient) : IGeminiService
     var response = await _httpClient.PostAsJsonAsync(requestUri, request, Options);
     var content = await response.Content.ReadAsStringAsync();
 
+    // TODO: Propogate the error response from gemini in the exception
+    // we throw here. Need to figure out how gemini returns errors
     if (response.IsSuccessStatusCode is false)
     {
       throw new AltGenException("Failed to generate alt text.");
