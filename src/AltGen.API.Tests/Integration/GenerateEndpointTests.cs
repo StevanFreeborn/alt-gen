@@ -25,7 +25,7 @@ public class GenerateEndpointTests : IntegrationTest
   public async Task GenerateEndpoint_WhenCalledWithRequiredParameters_ItShouldReturnOkWithAltText(MultipartFormDataContent content)
   {
     MockGeminiServiceHandler
-      .When(HttpMethod.Post, "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent/?key=ProviderKey")
+      .When(HttpMethod.Post, "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent/?key=ProviderKey")
       .Respond(
         "application/json",
         /*lang=json,strict*/

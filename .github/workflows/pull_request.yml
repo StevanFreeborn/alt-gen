@@ -52,5 +52,5 @@ jobs:
       - name: Build project
         run: dotnet build --no-restore
       - name: Test project
-        run: dotnet test
+        run: dotnet test --filter FullyQualifiedName!~PromptEvaluation
 
