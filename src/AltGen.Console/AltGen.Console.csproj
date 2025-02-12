@@ -16,4 +16,34 @@
     <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="21.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <GeneratedCodeDirectory>Generated</GeneratedCodeDirectory>
+    <GeneratedConstantsFile>$(GeneratedCodeDirectory)\Constants.cs</GeneratedConstantsFile>
+    <AltGenApiUri>http://localhost:7297</AltGenApiUri>
+  </PropertyGroup>
+
+  <Target Name="GenerateBuildConstants" BeforeTargets="BeforeBuild;BeforeRebuild">
+
+    <MakeDir Directories="$(GeneratedCodeDirectory)" />
+
+    <WriteLinesToFile 
+      File="$(GeneratedConstantsFile)" Lines="
+namespace $(AssemblyName).$(GeneratedCodeDirectory)%3b
+
+static class Constants
+{
+  public const string AltGenApiUri = &quot;$(AltGenApiUri)&quot;%3b
+}
+      " 
+      Overwrite="true" />
+
+    <ItemGroup>
+      <Compile Include="$(GeneratedConstantsFile)" Exclude="@(Compile)" />
+    </ItemGroup>
+  </Target>
+
 </Project>
