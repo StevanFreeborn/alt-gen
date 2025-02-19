@@ -4,8 +4,9 @@ global using System.Net.Http.Headers;
 global using System.Text.Json;
 
 global using AltGen.Console.Common;
-global using AltGen.Console.Generated;
+global using AltGen.Console.Config;
 global using AltGen.Console.Generate;
+global using AltGen.Console.Generated;
 
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
