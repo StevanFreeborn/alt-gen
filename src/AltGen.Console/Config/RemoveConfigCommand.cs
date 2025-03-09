@@ -25,14 +25,13 @@ sealed class RemoveConfigCommand(
 
     if (exists is false)
     {
-      _console.MarkupLine("[bold]No existing settings found.[/]");
-      return 1;
+      throw new ConfigException("No existing settings found.");
     }
 
     var settingsJson = await _fileSystem.File.ReadAllTextAsync(settings.SettingsPath);
-    var appSettings = JsonSerializer.Deserialize<AppSettings>(settingsJson) ?? throw new ConfigException("Failed to deserialize app settings.");
+    var appSettings = JsonSerializer.Deserialize<AppSettings>(settingsJson, JsonOptions.Default) ?? throw new ConfigException("Failed to deserialize app settings.");
     var updatedAppSettings = appSettings.RemoveProvider(settings);
-    var updatedJson = JsonSerializer.Serialize(updatedAppSettings);
+    var updatedJson = JsonSerializer.Serialize(updatedAppSettings, JsonOptions.Default);
     await _fileSystem.File.WriteAllTextAsync(settings.SettingsPath, updatedJson);
     _console.MarkupLine($"[bold]{settings.Provider}[/] has been removed.");
     return 0;

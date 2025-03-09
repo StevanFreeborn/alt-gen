@@ -5,12 +5,6 @@ sealed class AddConfigCommand(
   IFileSystem fileSystem
 ) : AsyncCommand<AddConfigCommand.Settings>
 {
-  static readonly JsonSerializerOptions JsonOptions = new()
-  {
-    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    PropertyNameCaseInsensitive = true,
-    WriteIndented = true
-  };
   readonly IAnsiConsole _console = console;
   readonly IFileSystem _fileSystem = fileSystem;
 
@@ -43,17 +37,17 @@ sealed class AddConfigCommand(
         new(settings.Provider, settings.Key, settings.Default)
       ]);
 
-      var json = JsonSerializer.Serialize(appSettings, JsonOptions);
+      var json = JsonSerializer.Serialize(appSettings, JsonOptions.Default);
       await _fileSystem.File.WriteAllTextAsync(settings.SettingsPath, json);
       _console.MarkupLine($"[bold]{settings.Provider}[/] has been configured.");
       return 0;
     }
 
     var existingJson = await _fileSystem.File.ReadAllTextAsync(settings.SettingsPath);
-    var existingAppSettings = JsonSerializer.Deserialize<AppSettings>(existingJson, JsonOptions)
+    var existingAppSettings = JsonSerializer.Deserialize<AppSettings>(existingJson, JsonOptions.Default)
       ?? throw new ConfigException("Failed to deserialize settings.");
     var updatedAppSettings = existingAppSettings.AddOrUpdateProvider(settings);
-    var udpatedJson = JsonSerializer.Serialize(updatedAppSettings, JsonOptions);
+    var udpatedJson = JsonSerializer.Serialize(updatedAppSettings, JsonOptions.Default);
     await _fileSystem.File.WriteAllTextAsync(settings.SettingsPath, udpatedJson);
     _console.MarkupLine($"[bold]{settings.Provider}[/] has been configured.");
     return 0;
