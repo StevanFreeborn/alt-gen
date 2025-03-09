@@ -7,7 +7,16 @@ static class HostBuilderExtensions
     var registrar = new TypeRegistrar(builder);
     var app = new CommandApp<GenerateCommand>(registrar);
 
-    app.Configure(static c => c.AddCommand<ConfigCommand>("config"));
+    app.Configure(static c =>
+    {
+      c.PropagateExceptions();
+
+      c.AddBranch("config", static c =>
+      {
+        c.AddCommand<AddConfigCommand>("add");
+        c.AddCommand<RemoveConfigCommand>("remove");
+      });
+    });
 
     return app;
   }

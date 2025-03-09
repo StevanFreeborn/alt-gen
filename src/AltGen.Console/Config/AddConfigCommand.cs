@@ -1,19 +1,9 @@
-
-using Microsoft.Extensions.Configuration;
-
 namespace AltGen.Console.Config;
 
-// TODO: We should refactor this so that
-// we have a config add and a config remove command
-// the config add will have basically the same code
-// as below but the config remove will just
-// accept a provider identifier and remove it
-
-sealed class ConfigCommand(
+sealed class AddConfigCommand(
   IAnsiConsole console,
-  IFileSystem fileSystem,
-  IConfiguration config
-) : AsyncCommand<ConfigCommand.Settings>
+  IFileSystem fileSystem
+) : AsyncCommand<AddConfigCommand.Settings>
 {
   static readonly JsonSerializerOptions JsonOptions = new()
   {
@@ -23,7 +13,6 @@ sealed class ConfigCommand(
   };
   readonly IAnsiConsole _console = console;
   readonly IFileSystem _fileSystem = fileSystem;
-  readonly IConfiguration _config = config;
 
   public class Settings(IFileSystem filesystem) : CommandSettings
   {
@@ -63,47 +52,10 @@ sealed class ConfigCommand(
     var existingJson = await _fileSystem.File.ReadAllTextAsync(settings.SettingsPath);
     var existingAppSettings = JsonSerializer.Deserialize<AppSettings>(existingJson, JsonOptions)
       ?? throw new ConfigException("Failed to deserialize settings.");
-    var updatedAppSettings = existingAppSettings.Update(settings);
+    var updatedAppSettings = existingAppSettings.AddOrUpdateProvider(settings);
     var udpatedJson = JsonSerializer.Serialize(updatedAppSettings, JsonOptions);
     await _fileSystem.File.WriteAllTextAsync(settings.SettingsPath, udpatedJson);
     _console.MarkupLine($"[bold]{settings.Provider}[/] has been configured.");
     return 0;
   }
-}
-
-record AppSettings(ProviderSettings[] Providers)
-{
-  public AppSettings Update(ConfigCommand.Settings settings)
-  {
-    var updatedProviders = Providers.Select(p =>
-    {
-      if (p.Provider == settings.Provider)
-      {
-        return p with { Key = settings.Key, Default = settings.Default };
-      }
-
-      if (p.Provider != settings.Provider && settings.Default)
-      {
-        return p with { Default = false };
-      }
-
-      return p;
-    });
-
-    var provider = Providers.FirstOrDefault(p => p.Provider == settings.Provider);
-
-    if (provider is null)
-    {
-      var newProvider = new ProviderSettings(settings.Provider, settings.Key, settings.Default);
-      return this with { Providers = [.. updatedProviders, newProvider] };
-    }
-
-    return this with { Providers = [.. updatedProviders] };
-  }
-}
-
-record ProviderSettings(string Provider, string Key, bool Default);
-
-class ConfigException(string message) : Exception(message)
-{
 }
