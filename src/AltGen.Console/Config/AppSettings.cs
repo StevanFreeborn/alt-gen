@@ -1,7 +1,14 @@
 namespace AltGen.Console.Config;
 
-record AppSettings(ProviderSettings[] Providers)
+record AppSettings
 {
+  public ProviderSettings[] Providers { get; init; } = [];
+
+  public AppSettings(ProviderSettings[] providers)
+  {
+    Providers = providers;
+  }
+
   public AppSettings AddOrUpdateProvider(AddConfigCommand.Settings settings)
   {
     var updatedProviders = Providers.Select(p =>
