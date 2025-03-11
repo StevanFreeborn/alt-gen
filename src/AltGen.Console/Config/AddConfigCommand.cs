@@ -24,7 +24,7 @@ sealed class AddConfigCommand(
     [Description("Set the provider as the default.")]
     public bool Default { get; init; }
 
-    public string SettingsPath => _fileSystem.Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+    public string SettingsPath => _fileSystem.Path.Combine(AppContext.BaseDirectory, AppSettings.SettingsFileName);
   }
 
   public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)

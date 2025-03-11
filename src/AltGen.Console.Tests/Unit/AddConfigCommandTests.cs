@@ -1,13 +1,9 @@
-using Spectre.Console;
-using Spectre.Console.Cli;
-using Spectre.Console.Testing;
-
 namespace AltGen.Console.Tests.Unit;
 
-public class AddConfigCommandTests
+public class AddConfigCommandTests : IDisposable
 {
   readonly Mock<IFileSystem> _fileSystem = new();
-  readonly IAnsiConsole _testConsole = new TestConsole();
+  readonly TestConsole _testConsole = new();
   readonly AddConfigCommand _sut;
 
   public AddConfigCommandTests()
@@ -20,6 +16,11 @@ public class AddConfigCommandTests
   public async Task ExecuteAsync_WhenSettingsDoNotExist_ItShouldCreateSettings()
   {
     var testSettingsPath = "appsettings.json";
+    var expectedAppSettings = new AppSettings([
+      new("provider", "key", false)
+    ]);
+    var expectedJson = JsonSerializer.Serialize(expectedAppSettings, JsonOptions.Default);
+
 
     _fileSystem
       .Setup(static x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
@@ -41,13 +42,56 @@ public class AddConfigCommandTests
 
     _fileSystem
       .Verify(
-        x => x.File.WriteAllTextAsync(testSettingsPath, It.IsAny<string>(), default),
+        x => x.File.WriteAllTextAsync(testSettingsPath, expectedJson, default),
         Times.Once
       );
   }
 
   [Fact]
   public async Task ExecuteAsync_WhenSettingsExist_ItShouldUpdateSettings()
+  {
+    var testSettingsPath = "appsettings.json";
+    var existingAppSettings = new AppSettings([
+      new("existing", "existing", false)
+    ]);
+    var existingJson = JsonSerializer.Serialize(existingAppSettings, JsonOptions.Default);
+    var expectedAppSettings = new AppSettings([
+      new("existing", "key", true)
+    ]);
+    var expectedJson = JsonSerializer.Serialize(expectedAppSettings, JsonOptions.Default);
+
+    _fileSystem
+      .Setup(static x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
+      .Returns(testSettingsPath);
+
+    _fileSystem
+      .Setup(static x => x.File.Exists(It.IsAny<string>()))
+      .Returns(true);
+
+    _fileSystem
+      .Setup(static x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
+      .ReturnsAsync(existingJson);
+
+    var commandSettings = new AddConfigCommand.Settings(_fileSystem.Object)
+    {
+      Provider = "existing",
+      Key = "key",
+      Default = true,
+    };
+
+    var result = await _sut.ExecuteAsync(null!, commandSettings);
+
+    result.Should().Be(0);
+
+    _fileSystem
+      .Verify(
+        x => x.File.WriteAllTextAsync(testSettingsPath, expectedJson, default),
+        Times.Once
+      );
+  }
+
+  [Fact]
+  public async Task ExecuteAsync_WhenSettingsExistButCanNotBeDeserialized_ItShouldThrow()
   {
     var testSettingsPath = "appsettings.json";
 
@@ -61,7 +105,7 @@ public class AddConfigCommandTests
 
     _fileSystem
       .Setup(static x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
-      .ReturnsAsync("{}");
+      .ReturnsAsync("null");
 
     var commandSettings = new AddConfigCommand.Settings(_fileSystem.Object)
     {
@@ -69,14 +113,14 @@ public class AddConfigCommandTests
       Key = "key",
     };
 
-    var result = await _sut.ExecuteAsync(null!, commandSettings);
+    var act = async () => await _sut.ExecuteAsync(null!, commandSettings);
 
-    result.Should().Be(0);
+    await act.Should().ThrowAsync<ConfigException>();
+  }
 
-    _fileSystem
-      .Verify(
-        x => x.File.WriteAllTextAsync(testSettingsPath, It.IsAny<string>(), default),
-        Times.Once
-      );
+  public void Dispose()
+  {
+    _testConsole.Dispose();
+    GC.SuppressFinalize(this);
   }
 }

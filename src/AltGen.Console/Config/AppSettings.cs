@@ -2,6 +2,8 @@ namespace AltGen.Console.Config;
 
 record AppSettings
 {
+  public const string SettingsFileName = "appsettings.json";
+
   public ProviderSettings[] Providers { get; init; } = [];
 
   public AppSettings(ProviderSettings[] providers)

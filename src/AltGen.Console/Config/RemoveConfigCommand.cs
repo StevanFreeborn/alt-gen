@@ -16,7 +16,7 @@ sealed class RemoveConfigCommand(
     [Description("The provider to remove.")]
     public string Provider { get; init; } = string.Empty;
 
-    public string SettingsPath => _fileSystem.Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+    public string SettingsPath => _fileSystem.Path.Combine(AppContext.BaseDirectory, AppSettings.SettingsFileName);
   }
 
   public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
@@ -29,7 +29,8 @@ sealed class RemoveConfigCommand(
     }
 
     var settingsJson = await _fileSystem.File.ReadAllTextAsync(settings.SettingsPath);
-    var appSettings = JsonSerializer.Deserialize<AppSettings>(settingsJson, JsonOptions.Default) ?? throw new ConfigException("Failed to deserialize app settings.");
+    var appSettings = JsonSerializer.Deserialize<AppSettings>(settingsJson, JsonOptions.Default)
+      ?? throw new ConfigException("Failed to deserialize app settings.");
     var updatedAppSettings = appSettings.RemoveProvider(settings);
     var updatedJson = JsonSerializer.Serialize(updatedAppSettings, JsonOptions.Default);
     await _fileSystem.File.WriteAllTextAsync(settings.SettingsPath, updatedJson);

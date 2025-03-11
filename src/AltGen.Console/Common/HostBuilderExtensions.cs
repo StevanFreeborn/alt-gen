@@ -9,12 +9,11 @@ static class HostBuilderExtensions
 
     app.Configure(static c =>
     {
-      c.PropagateExceptions();
-
       c.AddBranch("config", static c =>
       {
         c.AddCommand<AddConfigCommand>("add");
         c.AddCommand<RemoveConfigCommand>("remove");
+        c.AddCommand<ListConfigCommand>("list");
       });
     });
 
