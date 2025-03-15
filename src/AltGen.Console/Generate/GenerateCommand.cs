@@ -3,13 +3,15 @@ namespace AltGen.Console.Generate;
 sealed class GenerateCommand(
   IAnsiConsole console,
   IFileSystem fileSystem,
-  IAltGenService altGenService
+  IAltGenService altGenService,
+  IAppSettingsManager settingsManager
 ) : AsyncCommand<GenerateCommand.Settings>
 {
 
   readonly IAnsiConsole _console = console;
   readonly IFileSystem _fileSystem = fileSystem;
   readonly IAltGenService _altGenService = altGenService;
+  readonly IAppSettingsManager _settingsManager = settingsManager;
 
   public class Settings(IFileSystem fileSystem) : CommandSettings
   {
@@ -20,21 +22,17 @@ sealed class GenerateCommand(
       [".png"] = "image/png"
     };
 
-    readonly List<string> _providers = [
-      "gemini",
-    ];
-
     readonly IFileSystem _fileSystem = fileSystem;
 
-    [CommandArgument(1, "<provider>")]
+    [CommandOption("-p|--provider")]
     [Description("The provider to use for generating alt text.")]
     public string Provider { get; init; } = string.Empty;
 
-    [CommandArgument(2, "<key>")]
+    [CommandOption("-k|--key")]
     [Description("The key for the provider.")]
     public string Key { get; init; } = string.Empty;
 
-    [CommandArgument(3, "<path>")]
+    [CommandArgument(1, "<path>")]
     [Description("The path to the image to generate alt text for.")]
     public string Path { get; init; } = string.Empty;
 
@@ -42,13 +40,6 @@ sealed class GenerateCommand(
 
     public override ValidationResult Validate()
     {
-      // TODO: We should allow provider and key to be optional
-      // if they are not passed on the command line then
-      // we should try to resolve them from configuration
-      if (_providers.Contains(Provider) is false)
-      {
-        return ValidationResult.Error($"The provider '{Provider}' is not supported.");
-      }
 
       var pathExists = _fileSystem.File.Exists(Path);
 
@@ -70,12 +61,36 @@ sealed class GenerateCommand(
 
   public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
   {
+    var appSettings = await _settingsManager.GetAppSettingsAsync();
+    var provider = settings.Provider;
+    var key = settings.Key;
+
+    if (string.IsNullOrWhiteSpace(provider))
+    {
+      var defaultProvider = appSettings.GetDefaultProvider()
+        ?? throw new AltTextException("Please specify a provider or set a default provider.");
+      provider = defaultProvider.Provider;
+    }
+
+    if (Providers.IsSupported(provider) is false)
+    {
+      throw new AltTextException($"The provider '{provider}' is not supported.");
+    }
+
+    if (string.IsNullOrWhiteSpace(key))
+    {
+      var selectedProvider = appSettings.GetProvider(provider)
+        ?? throw new AltTextException("Please specify a key or set a default provider.");
+      key = selectedProvider.Key;
+    }
+
+
     var fileName = _fileSystem.Path.GetFileName(settings.Path);
     var image = await _fileSystem.File.ReadAllBytesAsync(settings.Path);
 
     var altText = await _altGenService.GenerateAltTextAsync(new(
-      settings.Provider,
-      settings.Key,
+      provider,
+      key,
       fileName,
       image,
       settings.ContentType

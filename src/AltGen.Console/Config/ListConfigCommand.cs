@@ -19,7 +19,7 @@ sealed class ListConfigCommand(
 
     var appSettings = await _settingsManager.GetAppSettingsAsync();
 
-    foreach (var provider in appSettings.Providers)
+    foreach (var provider in appSettings.GetProviders())
     {
       var providerName = provider.Provider;
       var providerKey = provider.Key;

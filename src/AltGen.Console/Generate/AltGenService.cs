@@ -19,7 +19,7 @@ sealed class AltGenService(HttpClient client) : IAltGenService
       {
         { new StringContent(req.Provider), "provider" },
         { new StringContent(req.ProviderKey), "providerKey" },
-        { new ByteArrayContent(req.Image), "file", req.FileName }
+        { byteContent, "file", req.FileName }
       }
     };
 

@@ -9,6 +9,13 @@ static class HostBuilderExtensions
 
     app.Configure(static c =>
     {
+      c.SetExceptionHandler(static (ex, resolver) =>
+      {
+        var console = resolver?.Resolve(typeof(IAnsiConsole)) as IAnsiConsole;
+        console?.WriteException(ex, ExceptionFormats.ShortenEverything);
+        return -99;
+      });
+
       c.AddBranch("config", static c =>
       {
         c.AddCommand<AddConfigCommand>("add");

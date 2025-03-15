@@ -24,7 +24,7 @@
   <PropertyGroup>
     <GeneratedCodeDirectory>Generated</GeneratedCodeDirectory>
     <GeneratedConstantsFile>$(GeneratedCodeDirectory)\Constants.cs</GeneratedConstantsFile>
-    <AltGenApiUri>http://localhost:7297</AltGenApiUri>
+    <AltGenApiUri>https://localhost:7297</AltGenApiUri>
   </PropertyGroup>
 
   <Target Name="GenerateBuildConstants" BeforeTargets="BeforeBuild;BeforeRebuild">

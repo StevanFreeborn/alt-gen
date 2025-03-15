@@ -21,6 +21,16 @@ sealed class AddConfigCommand(
     [CommandOption("-d|--default")]
     [Description("Set the provider as the default.")]
     public bool Default { get; init; }
+
+    public override ValidationResult Validate()
+    {
+      if (Providers.IsSupported(Provider) is false)
+      {
+        return ValidationResult.Error($"The provider '{Provider}' is not supported.");
+      }
+
+      return ValidationResult.Success();
+    }
   }
 
   public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)

@@ -44,4 +44,19 @@ record AppSettings
     var updatedProviders = Providers.Where(p => p.Provider != settings.Provider);
     return this with { Providers = [.. updatedProviders] };
   }
+
+  public ProviderSettings[] GetProviders()
+  {
+    return Providers;
+  }
+
+  public ProviderSettings? GetProvider(string provider)
+  {
+    return Providers.FirstOrDefault(p => p.Provider == provider);
+  }
+
+  public ProviderSettings? GetDefaultProvider()
+  {
+    return Providers.FirstOrDefault(static p => p.Default);
+  }
 }
