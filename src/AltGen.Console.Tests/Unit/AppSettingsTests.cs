@@ -2,14 +2,12 @@ namespace AltGen.Console.Tests.Unit;
 
 public class AppSettingsTests
 {
-  readonly Mock<IFileSystem> _fileSystemMock = new();
-
   [Fact]
   public void AddOrUpdateProvider_WhenProviderDoesNotExist_ItShouldAddProvider()
   {
     var providerSettings = new ProviderSettings("provider", "key", true);
 
-    var commandSettings = new AddConfigCommand.Settings(_fileSystemMock.Object)
+    var commandSettings = new AddConfigCommand.Settings()
     {
       Provider = providerSettings.Provider,
       Key = providerSettings.Key,
@@ -29,7 +27,7 @@ public class AppSettingsTests
     var providerSettings = new ProviderSettings("provider", "key", true);
     var existingProviderSettings = new ProviderSettings("provider", "key", false);
 
-    var commandSettings = new AddConfigCommand.Settings(_fileSystemMock.Object)
+    var commandSettings = new AddConfigCommand.Settings()
     {
       Provider = providerSettings.Provider,
       Key = providerSettings.Key,
@@ -48,7 +46,7 @@ public class AppSettingsTests
     var providerSettings = new ProviderSettings("claude", "key", true);
     var existingProviderSettings = new ProviderSettings("gemini", "key", true);
 
-    var commandSettings = new AddConfigCommand.Settings(_fileSystemMock.Object)
+    var commandSettings = new AddConfigCommand.Settings()
     {
       Provider = providerSettings.Provider,
       Key = providerSettings.Key,
@@ -69,7 +67,7 @@ public class AppSettingsTests
   {
     var existingProviderSettings = new ProviderSettings("provider", "key", true);
 
-    var commandSettings = new RemoveConfigCommand.Settings(_fileSystemMock.Object)
+    var commandSettings = new RemoveConfigCommand.Settings()
     {
       Provider = existingProviderSettings.Provider,
     };

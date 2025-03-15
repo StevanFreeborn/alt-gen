@@ -2,16 +2,14 @@ namespace AltGen.Console.Config;
 
 sealed class AddConfigCommand(
   IAnsiConsole console,
-  IFileSystem fileSystem
+  IAppSettingsManager settingsManager
 ) : AsyncCommand<AddConfigCommand.Settings>
 {
   readonly IAnsiConsole _console = console;
-  readonly IFileSystem _fileSystem = fileSystem;
+  readonly IAppSettingsManager _settingsManager = settingsManager;
 
-  public class Settings(IFileSystem filesystem) : CommandSettings
+  public class Settings : CommandSettings
   {
-    readonly IFileSystem _fileSystem = filesystem;
-
     [CommandArgument(1, "<provider>")]
     [Description("The provider to configure.")]
     public string Provider { get; init; } = string.Empty;
@@ -23,32 +21,23 @@ sealed class AddConfigCommand(
     [CommandOption("-d|--default")]
     [Description("Set the provider as the default.")]
     public bool Default { get; init; }
-
-    public string SettingsPath => _fileSystem.Path.Combine(AppContext.BaseDirectory, AppSettings.SettingsFileName);
   }
 
   public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
   {
-    var settingsExist = _fileSystem.File.Exists(settings.SettingsPath);
-
-    if (settingsExist is false)
+    if (_settingsManager.AppSettingsExist() is false)
     {
       var appSettings = new AppSettings([
         new(settings.Provider, settings.Key, settings.Default)
       ]);
-
-      var json = JsonSerializer.Serialize(appSettings, JsonOptions.Default);
-      await _fileSystem.File.WriteAllTextAsync(settings.SettingsPath, json);
+      await _settingsManager.SaveAppSettingsAsync(appSettings);
       _console.MarkupLine($"[bold]{settings.Provider}[/] has been configured.");
       return 0;
     }
 
-    var existingJson = await _fileSystem.File.ReadAllTextAsync(settings.SettingsPath);
-    var existingAppSettings = JsonSerializer.Deserialize<AppSettings>(existingJson, JsonOptions.Default)
-      ?? throw new ConfigException("Failed to deserialize settings.");
+    var existingAppSettings = await _settingsManager.GetAppSettingsAsync();
     var updatedAppSettings = existingAppSettings.AddOrUpdateProvider(settings);
-    var udpatedJson = JsonSerializer.Serialize(updatedAppSettings, JsonOptions.Default);
-    await _fileSystem.File.WriteAllTextAsync(settings.SettingsPath, udpatedJson);
+    await _settingsManager.SaveAppSettingsAsync(updatedAppSettings);
     _console.MarkupLine($"[bold]{settings.Provider}[/] has been configured.");
     return 0;
   }

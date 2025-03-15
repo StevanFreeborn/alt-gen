@@ -2,35 +2,28 @@ namespace AltGen.Console.Tests.Unit;
 
 public class AddConfigCommandTests : IDisposable
 {
-  readonly Mock<IFileSystem> _fileSystem = new();
+  readonly Mock<IAppSettingsManager> _mockSettingsManager = new();
   readonly TestConsole _testConsole = new();
   readonly AddConfigCommand _sut;
 
   public AddConfigCommandTests()
   {
-    _sut = new AddConfigCommand(_testConsole, _fileSystem.Object);
+    _sut = new AddConfigCommand(_testConsole, _mockSettingsManager.Object);
   }
 
 
   [Fact]
   public async Task ExecuteAsync_WhenSettingsDoNotExist_ItShouldCreateSettings()
   {
-    var testSettingsPath = "appsettings.json";
     var expectedAppSettings = new AppSettings([
       new("provider", "key", false)
     ]);
-    var expectedJson = JsonSerializer.Serialize(expectedAppSettings, JsonOptions.Default);
 
-
-    _fileSystem
-      .Setup(static x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
-      .Returns(testSettingsPath);
-
-    _fileSystem
-      .Setup(static x => x.File.Exists(It.IsAny<string>()))
+    _mockSettingsManager
+      .Setup(static x => x.AppSettingsExist())
       .Returns(false);
 
-    var commandSettings = new AddConfigCommand.Settings(_fileSystem.Object)
+    var commandSettings = new AddConfigCommand.Settings()
     {
       Provider = "provider",
       Key = "key",
@@ -40,39 +33,36 @@ public class AddConfigCommandTests : IDisposable
 
     result.Should().Be(0);
 
-    _fileSystem
-      .Verify(
-        x => x.File.WriteAllTextAsync(testSettingsPath, expectedJson, default),
-        Times.Once
-      );
+    _mockSettingsManager.Verify(
+      static x => x.SaveAppSettingsAsync(It.Is<AppSettings>(
+        static x => x.Providers[0].Provider == "provider" &&
+          x.Providers[0].Key == "key" &&
+          x.Providers[0].Default == false
+      )),
+      Times.Once
+    );
   }
 
   [Fact]
   public async Task ExecuteAsync_WhenSettingsExist_ItShouldUpdateSettings()
   {
-    var testSettingsPath = "appsettings.json";
     var existingAppSettings = new AppSettings([
       new("existing", "existing", false)
     ]);
-    var existingJson = JsonSerializer.Serialize(existingAppSettings, JsonOptions.Default);
+
     var expectedAppSettings = new AppSettings([
       new("existing", "key", true)
     ]);
-    var expectedJson = JsonSerializer.Serialize(expectedAppSettings, JsonOptions.Default);
 
-    _fileSystem
-      .Setup(static x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
-      .Returns(testSettingsPath);
-
-    _fileSystem
-      .Setup(static x => x.File.Exists(It.IsAny<string>()))
+    _mockSettingsManager
+      .Setup(static x => x.AppSettingsExist())
       .Returns(true);
 
-    _fileSystem
-      .Setup(static x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
-      .ReturnsAsync(existingJson);
+    _mockSettingsManager
+      .Setup(static x => x.GetAppSettingsAsync())
+      .ReturnsAsync(existingAppSettings);
 
-    var commandSettings = new AddConfigCommand.Settings(_fileSystem.Object)
+    var commandSettings = new AddConfigCommand.Settings()
     {
       Provider = "existing",
       Key = "key",
@@ -83,39 +73,14 @@ public class AddConfigCommandTests : IDisposable
 
     result.Should().Be(0);
 
-    _fileSystem
-      .Verify(
-        x => x.File.WriteAllTextAsync(testSettingsPath, expectedJson, default),
-        Times.Once
-      );
-  }
-
-  [Fact]
-  public async Task ExecuteAsync_WhenSettingsExistButCanNotBeDeserialized_ItShouldThrow()
-  {
-    var testSettingsPath = "appsettings.json";
-
-    _fileSystem
-      .Setup(static x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
-      .Returns(testSettingsPath);
-
-    _fileSystem
-      .Setup(static x => x.File.Exists(It.IsAny<string>()))
-      .Returns(true);
-
-    _fileSystem
-      .Setup(static x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
-      .ReturnsAsync("null");
-
-    var commandSettings = new AddConfigCommand.Settings(_fileSystem.Object)
-    {
-      Provider = "provider",
-      Key = "key",
-    };
-
-    var act = async () => await _sut.ExecuteAsync(null!, commandSettings);
-
-    await act.Should().ThrowAsync<ConfigException>();
+    _mockSettingsManager.Verify(
+      static x => x.SaveAppSettingsAsync(It.Is<AppSettings>(
+        static x => x.Providers[0].Provider == "existing" &&
+          x.Providers[0].Key == "key" &&
+          x.Providers[0].Default == true
+      )),
+      Times.Once
+    );
   }
 
   public void Dispose()

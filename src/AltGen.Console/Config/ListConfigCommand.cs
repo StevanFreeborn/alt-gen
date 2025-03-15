@@ -1,25 +1,23 @@
 
 namespace AltGen.Console.Config;
 
-sealed class ListConfigCommand(IAnsiConsole console, IFileSystem fileSystem) : AsyncCommand
+sealed class ListConfigCommand(
+  IAnsiConsole console,
+  IAppSettingsManager settingsManager
+) : AsyncCommand
 {
   readonly IAnsiConsole _console = console;
-  readonly IFileSystem _fileSystem = fileSystem;
+  readonly IAppSettingsManager _settingsManager = settingsManager;
 
   public override async Task<int> ExecuteAsync(CommandContext context)
   {
-    var settingsPath = _fileSystem.Path.Combine(AppContext.BaseDirectory, AppSettings.SettingsFileName);
-    var settingsExist = _fileSystem.File.Exists(settingsPath);
-
-    if (settingsExist is false)
+    if (_settingsManager.AppSettingsExist() is false)
     {
       _console.MarkupLine("No settings found.");
       return 0;
     }
 
-    var settingsJson = await _fileSystem.File.ReadAllTextAsync(settingsPath);
-    var appSettings = JsonSerializer.Deserialize<AppSettings>(settingsJson, JsonOptions.Default)
-      ?? throw new ConfigException("Failed to deserialize settings.");
+    var appSettings = await _settingsManager.GetAppSettingsAsync();
 
     foreach (var provider in appSettings.Providers)
     {

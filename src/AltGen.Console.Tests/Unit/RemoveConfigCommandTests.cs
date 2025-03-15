@@ -2,29 +2,23 @@ namespace AltGen.Console.Tests.Unit;
 
 public class RemoveConfigCommandTests : IDisposable
 {
-  readonly Mock<IFileSystem> _fileSystem = new();
+  readonly Mock<IAppSettingsManager> _mockSettingsManager = new();
   readonly TestConsole _testConsole = new();
   readonly RemoveConfigCommand _sut;
 
   public RemoveConfigCommandTests()
   {
-    _sut = new RemoveConfigCommand(_fileSystem.Object, _testConsole);
+    _sut = new RemoveConfigCommand(_testConsole, _mockSettingsManager.Object);
   }
 
   [Fact]
   public async Task ExecuteAsync_WhenSettingsDoNotExist_ItShouldThrow()
   {
-    var testSettingsPath = "appsettings.json";
-
-    _fileSystem
-      .Setup(static x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
-      .Returns(testSettingsPath);
-
-    _fileSystem
-      .Setup(static x => x.Path.Exists(It.IsAny<string>()))
+    _mockSettingsManager
+      .Setup(static x => x.AppSettingsExist())
       .Returns(false);
 
-    var commandSettings = new RemoveConfigCommand.Settings(_fileSystem.Object)
+    var commandSettings = new RemoveConfigCommand.Settings()
     {
       Provider = "provider",
     };
@@ -38,23 +32,17 @@ public class RemoveConfigCommandTests : IDisposable
   [Fact]
   public async Task ExecuteAsync_WhenProviderDoesNotExist_ItShouldDoNothing()
   {
-    var testSettingsPath = "appsettings.json";
     var testSettings = new AppSettings([]);
-    var testSettingsJson = JsonSerializer.Serialize(testSettings, JsonOptions.Default);
 
-    _fileSystem
-      .Setup(static x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
-      .Returns(testSettingsPath);
-
-    _fileSystem
-      .Setup(static x => x.Path.Exists(It.IsAny<string>()))
+    _mockSettingsManager
+      .Setup(static x => x.AppSettingsExist())
       .Returns(true);
 
-    _fileSystem
-      .Setup(static x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
-      .ReturnsAsync(testSettingsJson);
+    _mockSettingsManager
+      .Setup(static x => x.GetAppSettingsAsync())
+      .ReturnsAsync(testSettings);
 
-    var commandSettings = new RemoveConfigCommand.Settings(_fileSystem.Object)
+    var commandSettings = new RemoveConfigCommand.Settings()
     {
       Provider = "provider",
     };
@@ -63,35 +51,27 @@ public class RemoveConfigCommandTests : IDisposable
 
     result.Should().Be(0);
 
-    _fileSystem
-      .Verify(
-        x => x.File.WriteAllTextAsync(testSettingsPath, testSettingsJson, default),
-        Times.Once
-      );
+    _mockSettingsManager.Verify(x => x.SaveAppSettingsAsync(testSettings), Times.Once);
   }
 
   [Fact]
   public async Task ExecuteAsync_WhenProviderExists_ItShouldRemoveProviderFromSettings()
   {
-    var testSettingsPath = "appsettings.json";
     var testSettings = new AppSettings([
       new("provider", "key", false)
     ]);
-    var testSettingsJson = JsonSerializer.Serialize(testSettings, JsonOptions.Default);
 
-    _fileSystem
-      .Setup(static x => x.Path.Combine(It.IsAny<string>(), It.IsAny<string>()))
-      .Returns(testSettingsPath);
+    var expectedSettings = new AppSettings([]);
 
-    _fileSystem
-      .Setup(static x => x.Path.Exists(It.IsAny<string>()))
+    _mockSettingsManager
+      .Setup(static x => x.AppSettingsExist())
       .Returns(true);
 
-    _fileSystem
-      .Setup(static x => x.File.ReadAllTextAsync(It.IsAny<string>(), default))
-      .ReturnsAsync(testSettingsJson);
+    _mockSettingsManager
+      .Setup(static x => x.GetAppSettingsAsync())
+      .ReturnsAsync(testSettings);
 
-    var commandSettings = new RemoveConfigCommand.Settings(_fileSystem.Object)
+    var commandSettings = new RemoveConfigCommand.Settings()
     {
       Provider = "provider",
     };
@@ -100,14 +80,7 @@ public class RemoveConfigCommandTests : IDisposable
 
     result.Should().Be(0);
 
-    var expectedSettings = new AppSettings([]);
-    var expectedSettingsJson = JsonSerializer.Serialize(expectedSettings, JsonOptions.Default);
-
-    _fileSystem
-      .Verify(
-        x => x.File.WriteAllTextAsync(testSettingsPath, expectedSettingsJson, default),
-        Times.Once
-      );
+    _mockSettingsManager.Verify(x => x.SaveAppSettingsAsync(expectedSettings), Times.Once);
   }
 
   public void Dispose()
