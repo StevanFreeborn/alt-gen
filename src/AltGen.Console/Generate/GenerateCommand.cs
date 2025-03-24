@@ -40,7 +40,6 @@ sealed class GenerateCommand(
 
     public override ValidationResult Validate()
     {
-
       var pathExists = _fileSystem.File.Exists(Path);
 
       if (pathExists is false)

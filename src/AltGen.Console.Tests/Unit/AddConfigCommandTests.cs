@@ -11,6 +11,33 @@ public class AddConfigCommandTests : IDisposable
     _sut = new AddConfigCommand(_testConsole, _mockSettingsManager.Object);
   }
 
+  [Fact]
+  public void Validate_WhenProviderIsNotSupported_ItShouldReturnError()
+  {
+    var commandSettings = new AddConfigCommand.Settings()
+    {
+      Provider = "unsupported",
+      Key = "key",
+    };
+
+    var result = commandSettings.Validate();
+
+    result.Successful.Should().BeFalse();
+  }
+
+  [Fact]
+  public void Validate_WhenProviderIsSupported_ItShouldReturnSuccess()
+  {
+    var commandSettings = new AddConfigCommand.Settings()
+    {
+      Provider = "gemini",
+      Key = "key",
+    };
+
+    var result = commandSettings.Validate();
+
+    result.Successful.Should().BeTrue();
+  }
 
   [Fact]
   public async Task ExecuteAsync_WhenSettingsDoNotExist_ItShouldCreateSettings()

@@ -63,6 +63,28 @@ public class AppSettingsTests
   }
 
   [Fact]
+  public void AddOrUpdateProvider_WhenExistingProvider_ItShouldAddNewProvider()
+  {
+    var providerSettings = new ProviderSettings("claude", "key", false);
+    var existingProviderSettings = new ProviderSettings("gemini", "key", false);
+
+    var commandSettings = new AddConfigCommand.Settings()
+    {
+      Provider = providerSettings.Provider,
+      Key = providerSettings.Key,
+      Default = providerSettings.Default,
+    };
+
+    var appSettings = new AppSettings([existingProviderSettings]);
+    var updatedAppSettings = appSettings.AddOrUpdateProvider(commandSettings);
+
+    updatedAppSettings.Should().BeEquivalentTo(new AppSettings([
+      providerSettings,
+      existingProviderSettings,
+    ]));
+  }
+
+  [Fact]
   public void RemoveProvider_WhenProviderExists_ItShouldRemoveProvider()
   {
     var existingProviderSettings = new ProviderSettings("provider", "key", true);
