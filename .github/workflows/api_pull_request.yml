@@ -1,4 +1,4 @@
-name: Pull Request
+name: API Pull Request
 defaults:
   run:
     working-directory: ./src

@@ -1,16 +1,12 @@
-name: Deploy
+name: Deploy API
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.github/**'
-      - '.gitignore'
-      - '.editorconfig'
-      - 'LICENSE.md'
-      - '**/*/README.md'
-      - '**/*/Dockerfile'
+    paths:
+      - src/AltGen.API/**
+      - src/AltGen.API.Tests/**
 jobs:
   build:
     name: Build and push Docker image
