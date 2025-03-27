@@ -23,8 +23,10 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.x.x
-      - name: Format project
-        run: dotnet format --verbosity normal
+      - name: Format projects
+        run: |
+          dotnet format ./AltGen.API/AltGen.API.csproj --verbosity normal
+          dotnet format ./AltGen.API.Tests/AltGen.API.Tests.csproj --verbosity normal
       - name: Commit Changes
         run: |
           git config user.name "GitHub Actions"
@@ -48,9 +50,9 @@ jobs:
         with:
           dotnet-version: 9.x.x
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ./AltGen.API.Tests/AltGen.API.Tests.csproj
       - name: Build project
-        run: dotnet build --no-restore
+        run: dotnet build ./AltGen.API.Tests/AltGen.API.Tests.csproj --no-restore
       - name: Test project
-        run: dotnet test --filter FullyQualifiedName!~PromptEvaluation
+        run: dotnet test ./AltGen.API.Tests/AltGen.API.Tests.csproj --filter FullyQualifiedName!~PromptEvaluation
 
