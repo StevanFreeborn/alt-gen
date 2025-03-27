@@ -1,1 +1,58 @@
 name: Console Pull Request
+defaults:
+  run:
+    working-directory: ./src
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - src/AltGen.Console/**
+      - src/AltGen.Console.Tests/**
+    branches:
+      - main
+jobs:
+  format:
+    name: Run dotnet format
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x.x
+      - name: Format projects
+        run: |
+          dotnet format ./AltGen.Console/AltGen.Console.csproj --verbosity normal
+          dotnet format ./AltGen.Console.Tests/AltGen.Console.Tests.csproj --verbosity normal
+      - name: Commit Changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "<>"
+          if [[ $(git status --porcelain) ]]; then
+            git add .
+            git commit -m "chore: format fixes [skip ci]"
+            git fetch origin
+            git pull --rebase origin ${{ github.head_ref }}
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+  build_and_test:
+    name: Run tests
+    needs: format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x.x
+      - name: Restore dependencies
+        run: dotnet restore ./AltGen.Console.Tests/AltGen.Console.Tests.csproj
+      - name: Build project
+        run: dotnet build ./AltGen.Console.Tests/AltGen.Console.Tests.csproj --no-restore
+      - name: Test project
+        run: dotnet test ./AltGen.Console.Tests/AltGen.Console.Tests.csproj
+
