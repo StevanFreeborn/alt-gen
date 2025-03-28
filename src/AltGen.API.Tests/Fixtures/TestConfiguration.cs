@@ -5,7 +5,7 @@ namespace AltGen.API.Tests.Fixtures;
 public class TestConfiguration
 {
   static IConfiguration Config { get; } = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.Test.json")
+    .AddJsonFile("appsettings.Test.json", optional: true)
     .AddEnvironmentVariables()
     .Build();
 

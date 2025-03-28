@@ -56,6 +56,8 @@ jobs:
       - name: Build project
         run: dotnet build ./AltGen.API.Tests/AltGen.API.Tests.csproj --no-restore
       - name: Test project
+        env:
+          Gemini__ApiKey: ${{ secrets.GEMINI_APIKEY }}
         run: dotnet test ./AltGen.API.Tests/AltGen.API.Tests.csproj --filter FullyQualifiedName!~PromptEvaluation
       - name: Upload test coverage report
         uses: actions/upload-artifact@v4
