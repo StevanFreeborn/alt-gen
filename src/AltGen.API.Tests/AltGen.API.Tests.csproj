@@ -46,12 +46,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Files\**\*">
+    <None Include="Files\**\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="appsettings.Test.json">
+    </None>
+    <None Include="appsettings.Test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
 
 </Project>

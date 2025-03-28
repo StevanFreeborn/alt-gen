@@ -49,10 +49,16 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.x.x
+      - name: Install report generator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
       - name: Restore dependencies
         run: dotnet restore ./AltGen.API.Tests/AltGen.API.Tests.csproj
       - name: Build project
         run: dotnet build ./AltGen.API.Tests/AltGen.API.Tests.csproj --no-restore
       - name: Test project
         run: dotnet test ./AltGen.API.Tests/AltGen.API.Tests.csproj --filter FullyQualifiedName!~PromptEvaluation
-
+      - name: Upload test coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-coverage
+          path: ./AltGen.API.Tests/TestResults
