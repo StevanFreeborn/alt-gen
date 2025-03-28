@@ -46,12 +46,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Files\**\*">
+    <Content Include="Files\**\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="appsettings.Test.json">
+    </Content>
+    <Content Include="appsettings.Test.json" Condition="Exists('appsettings.Test.json')">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
 </Project>
