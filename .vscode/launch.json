@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "inputs": [
+    {
+      "id": "arguments",
+      "description": "The arguments to pass to the program",
+      "type": "promptString",
+      "default": ""
+    }
+  ],
+  "configurations": [
+    {
+      "name": "AltGen.API",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-api",
+      "program": "${workspaceFolder}/src/AltGen.API/bin/Debug/net9.0/AltGen.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/AltGen.API",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      }
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach"
+    },
+    {
+      "name": "AltGen.Console",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/AltGen.Console/bin/Debug/net9.0/AltGen.Console.dll",
+      "args": "${input:arguments}",
+      "cwd": "${workspaceFolder}/src/AltGen.Console",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    }
+  ]
+}

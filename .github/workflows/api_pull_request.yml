@@ -1,0 +1,66 @@
+name: API Pull Request
+defaults:
+  run:
+    working-directory: ./src
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - src/AltGen.API/**
+      - src/AltGen.API.Tests/**
+    branches:
+      - main
+jobs:
+  format:
+    name: Run dotnet format
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x.x
+      - name: Format projects
+        run: |
+          dotnet format ./AltGen.API/AltGen.API.csproj --verbosity normal
+          dotnet format ./AltGen.API.Tests/AltGen.API.Tests.csproj --verbosity normal
+      - name: Commit Changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "<>"
+          if [[ $(git status --porcelain) ]]; then
+            git add .
+            git commit -m "chore: format fixes [skip ci]"
+            git fetch origin
+            git pull --rebase origin ${{ github.head_ref }}
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+  build_and_test:
+    name: Run tests
+    needs: format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x.x
+      - name: Install report generator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+      - name: Restore dependencies
+        run: dotnet restore ./AltGen.API.Tests/AltGen.API.Tests.csproj
+      - name: Build project
+        run: dotnet build ./AltGen.API.Tests/AltGen.API.Tests.csproj --no-restore
+      - name: Test project
+        env:
+          Gemini__ApiKey: ${{ secrets.GEMINI_APIKEY }}
+        run: dotnet test ./AltGen.API.Tests/AltGen.API.Tests.csproj --filter FullyQualifiedName!~PromptEvaluation
+      - name: Upload test coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-coverage
+          path: ./AltGen.API.Tests/TestResults

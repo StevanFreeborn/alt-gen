@@ -2,10 +2,10 @@ namespace AltGen.API.Generate.Providers;
 
 static class LLMProvider
 {
-  public const string Gemini = "Gemini";
+  public const string Gemini = "gemini";
 
   public static bool IsValid(string provider)
   {
-    return provider is Gemini;
+    return provider.ToLowerInvariant() is Gemini;
   }
 }

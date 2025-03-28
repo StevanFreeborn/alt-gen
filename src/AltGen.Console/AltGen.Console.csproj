@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.1.0" />
+    <PackageReference Include="Spectre.Console" Version="0.49.1" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.49.1" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" Version="21.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <GeneratedCodeDirectory>Generated</GeneratedCodeDirectory>
+    <GeneratedConstantsFile>$(GeneratedCodeDirectory)\Constants.cs</GeneratedConstantsFile>
+    <AltGenApiUri>https://localhost:7297</AltGenApiUri>
+  </PropertyGroup>
+
+  <Target Name="GenerateBuildConstants" BeforeTargets="BeforeBuild;BeforeRebuild">
+
+    <MakeDir Directories="$(GeneratedCodeDirectory)" />
+
+    <WriteLinesToFile 
+      File="$(GeneratedConstantsFile)" Lines="
+namespace $(AssemblyName).$(GeneratedCodeDirectory)%3b
+
+static class Constants
+{
+  public const string AltGenApiUri = &quot;$(AltGenApiUri)&quot;%3b
+}
+      " 
+      Overwrite="true" />
+
+    <ItemGroup>
+      <Compile Include="$(GeneratedConstantsFile)" Exclude="@(Compile)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

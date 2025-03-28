@@ -1,16 +1,12 @@
-name: Deploy
+name: Deploy API
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.github/**'
-      - '.gitignore'
-      - '.editorconfig'
-      - 'LICENSE.md'
-      - '**/*/README.md'
-      - '**/*/Dockerfile'
+    paths:
+      - src/AltGen.API/**
+      - src/AltGen.API.Tests/**
 jobs:
   build:
     name: Build and push Docker image
@@ -51,5 +47,5 @@ jobs:
             docker stop api.altgen.stevanfreeborn.com
             docker rm api.altgen.stevanfreeborn.com
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/api.altgen.stevanfreeborn.com:${{ needs.build.outputs.version }}
-            docker run -d -p 7778:8080 --name api.altgen.stevanfreeborn.com ${{ secrets.DOCKERHUB_USERNAME }}/api.altgen.stevanfreeborn.com:${{ needs.build.outputs.version }}
+            docker run --restart always -d -p 7778:8080 --name api.altgen.stevanfreeborn.com ${{ secrets.DOCKERHUB_USERNAME }}/api.altgen.stevanfreeborn.com:${{ needs.build.outputs.version }}
 

@@ -6,7 +6,7 @@ class AltTextProviderFactory(IServiceProvider serviceProvider) : IAltTextProvide
 
   public IAltTextProvider Create(string provider)
   {
-    return provider switch
+    return provider.ToLowerInvariant() switch
     {
       LLMProvider.Gemini => _serviceProvider.GetRequiredKeyedService<IAltTextProvider>(LLMProvider.Gemini),
       _ => throw new NotSupportedException($"The provider '{provider}' is not supported.")

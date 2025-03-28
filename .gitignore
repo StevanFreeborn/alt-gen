@@ -7,6 +7,12 @@
 appsettings*.json
 !appsettings.Example.json
 
+# generated
+src/AltGen.Console/Generated/**/*
+
+# dist
+dist/**/*
+
 # dotenv files
 .env
 
