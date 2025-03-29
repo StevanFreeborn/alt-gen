@@ -63,15 +63,15 @@ jobs:
       - name: Build
         run: dotnet build src
       - name: Publish for mac-os
-        run: dotnet publish src/AltGen.Console/AltGen.Console.csproj -c Release -r osx-x64 --self-contained -o dist/mac-os -p:AltGenApiUri=${{ secrets.ALTGEN_API_URI }}
+        run: dotnet publish src/AltGen.Console/AltGen.Console.csproj -c Release -r osx-x64 -o dist/mac-os -p:AltGenApiUri=${{ secrets.ALTGEN_API_URI }}
       - name: Rename mac-os file
         run: mv dist/mac-os/AltGen.Console dist/mac-os/AltGen.Console_macos
       - name: Publish for linux-os
-        run: dotnet publish src/AltGen.Console/AltGen.Console.csproj -c Release -r linux-x64 --self-contained -o dist/linux-os -p:AltGenApiUri=${{ secrets.ALTGEN_API_URI }}
+        run: dotnet publish src/AltGen.Console/AltGen.Console.csproj -c Release -r linux-x64 -o dist/linux-os -p:AltGenApiUri=${{ secrets.ALTGEN_API_URI }}
       - name: Rename linux-os file
         run: mv dist/linux-os/AltGen.Console dist/linux-os/AltGen.Console_linux
       - name: Publish for windows-os
-        run: dotnet publish src/AltGen.Console/AltGen.Console.csproj -c Release -r win-x64 --self-contained -o dist/windows-os -p:AltGenApiUri=${{ secrets.ALTGEN_API_URI }}
+        run: dotnet publish src/AltGen.Console/AltGen.Console.csproj -c Release -r win-x64 -o dist/windows-os -p:AltGenApiUri=${{ secrets.ALTGEN_API_URI }}
       - name: Rename windows-os file
         run: mv dist/windows-os/AltGen.Console.exe dist/windows-os/AltGen.Console_windows.exe
       - name: Get project version
