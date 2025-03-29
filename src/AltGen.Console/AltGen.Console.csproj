@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyTitle>AltGen.Console</AssemblyTitle>
@@ -38,16 +38,7 @@
 
     <MakeDir Directories="$(GeneratedCodeDirectory)" />
 
-    <WriteLinesToFile 
-      File="$(GeneratedConstantsFile)" Lines="
-namespace $(AssemblyName).$(GeneratedCodeDirectory)%3b
-
-static class Constants
-{
-  public const string AltGenApiUri = &quot;$(AltGenApiUri)&quot;%3b
-}
-      " 
-      Overwrite="true" />
+    <WriteLinesToFile File="$(GeneratedConstantsFile)" Lines="&#xA;namespace $(AssemblyName).$(GeneratedCodeDirectory)%3b&#xA;&#xA;static class Constants&#xA;{&#xA;  public const string AltGenApiUri = &quot;$(AltGenApiUri)&quot;%3b&#xA;}&#xA;      " Overwrite="true" />
 
     <ItemGroup>
       <Compile Include="$(GeneratedConstantsFile)" Exclude="@(Compile)" />
