@@ -35,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: change-log
-          path: src/BGR.Console/CHANGELOG.md
+          path: src/AltGen.Console/CHANGELOG.md
       - name: Push changes to GitHub
         if: steps.versionize.outcome == 'success'
         uses: ad-m/github-push-action@master
@@ -64,10 +64,16 @@ jobs:
         run: dotnet build src
       - name: Publish for mac-os
         run: dotnet publish src/AltGen.Console/AltGen.Console.csproj -c Release -r osx-x64 --self-contained -o dist/mac-os -p:AltGenApiUri=${{ secrets.ALTGEN_API_URI }}
+      - name: Rename mac-os file
+        run: mv dist/mac-os/AltGen.Console dist/mac-os/AltGen.Console_macos
       - name: Publish for linux-os
         run: dotnet publish src/AltGen.Console/AltGen.Console.csproj -c Release -r linux-x64 --self-contained -o dist/linux-os -p:AltGenApiUri=${{ secrets.ALTGEN_API_URI }}
+      - name: Rename linux-os file
+        run: mv dist/linux-os/AltGen.Console dist/linux-os/AltGen.Console_linux
       - name: Publish for windows-os
         run: dotnet publish src/AltGen.Console/AltGen.Console.csproj -c Release -r win-x64 --self-contained -o dist/windows-os -p:AltGenApiUri=${{ secrets.ALTGEN_API_URI }}
+      - name: Rename windows-os file
+        run: mv dist/windows-os/AltGen.Console.exe dist/windows-os/AltGen.Console_windows.exe
       - name: Get project version
         uses: kzrnm/get-net-sdk-project-versions-action@v1
         id: get-version
@@ -82,11 +88,11 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.ACTIONS_PAT }}
-          name: bgr v${{ steps.get-version.outputs.version }}
+          name: AltGen.Console v${{ steps.get-version.outputs.version }}
           tag_name: v${{ steps.get-version.outputs.version }}
           draft: false
           body_path: src/AltGen.Console/CHANGELOG.md
           files: |
-            dist/mac-os/AltGen.Console
-            dist/linux-os/AltGen.Console
-            dist/windows-os/AltGen.Console.exe
+            dist/mac-os/AltGen.Console_macos
+            dist/linux-os/AltGen.Console_linux
+            dist/windows-os/AltGen.Console_windows.exe
