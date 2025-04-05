@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltGen.Console", "AltGen.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltGen.Console.Tests", "AltGen.Console.Tests\AltGen.Console.Tests.csproj", "{F7DC6A70-907B-448A-A69D-4E2E80FA3FD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltGen.Web", "AltGen.Web\AltGen.Web.csproj", "{CD09C06D-AB87-4C4E-8AD7-2694ED9BF5C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltGen.Web.Client", "AltGen.Web.Client\AltGen.Web.Client.csproj", "{DCE07E79-23A4-490E-A796-EA140D2040C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,13 @@ Global
 		{F7DC6A70-907B-448A-A69D-4E2E80FA3FD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7DC6A70-907B-448A-A69D-4E2E80FA3FD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7DC6A70-907B-448A-A69D-4E2E80FA3FD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD09C06D-AB87-4C4E-8AD7-2694ED9BF5C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD09C06D-AB87-4C4E-8AD7-2694ED9BF5C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD09C06D-AB87-4C4E-8AD7-2694ED9BF5C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD09C06D-AB87-4C4E-8AD7-2694ED9BF5C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCE07E79-23A4-490E-A796-EA140D2040C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCE07E79-23A4-490E-A796-EA140D2040C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCE07E79-23A4-490E-A796-EA140D2040C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCE07E79-23A4-490E-A796-EA140D2040C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

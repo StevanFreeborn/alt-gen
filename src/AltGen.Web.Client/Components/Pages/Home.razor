@@ -1,0 +1,24 @@
+﻿@inject ILogger<Home> Logger
+@page "/"
+@rendermode InteractiveWebAssembly
+
+<PageTitle>AltGen.Web</PageTitle>
+
+<h1>AI Generated Alt Text</h1>
+
+<form method="post">
+  <input type="text" @onchange="@(e => Logger.LogInformation("Text changed: {Value}", e.Value))" />
+  <InputFile OnChange="LoadFiles" multiple />
+</form>
+
+@code {
+  private void LoadFiles(InputFileChangeEventArgs e)
+  {
+    var files = e.GetMultipleFiles(5);
+    
+    foreach (var file in files)
+    {
+      Logger.LogInformation("File loaded: {Name}, Size: {Size}", file.Name, file.Size);
+    }
+  }
+}
