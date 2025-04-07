@@ -38,11 +38,11 @@
     await stream.ReadAsync(fileBytes, 0, (int)file.Size);
 
     var altText = await AltGenService.GenerateAltTextAsync(new(
-      _provider,
-      _providerKey,
-      file.Name,
-      fileBytes,
-      file.ContentType
+    _provider,
+    _providerKey,
+    file.Name,
+    fileBytes,
+    file.ContentType
     ));
 
     // TODO: Present on the screen to the user
