@@ -7,7 +7,7 @@ class AppSettingsManager(IFileSystem fileSystem) : IAppSettingsManager
 
   public bool AppSettingsExist()
   {
-    return _fileSystem.Path.Exists(SettingsFileName);
+    return _fileSystem.Path.Exists(GetSettingsPath());
   }
 
   public async Task<AppSettings> GetAppSettingsAsync()

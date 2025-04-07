@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="0.0.1"></a>
+## [0.0.1](https://www.github.com/StevanFreeborn/alt-gen/releases/tag/v0.0.1) (2025-04-05)
+
+### Bug Fixes
+
+* use GetSettingsPath when checking if settings exists ([b3afb2b](https://www.github.com/StevanFreeborn/alt-gen/commit/b3afb2b7d2a3582f4f303ba7fa7dca093a144725))
+
 <a name="0.0.0"></a>
 ## [0.0.0](https://www.github.com/StevanFreeborn/alt-gen/releases/tag/v0.0.0) (2025-03-29)
 
