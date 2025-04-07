@@ -45,6 +45,21 @@ builder.Services.AddRateLimiter(
   }
 );
 
+// TODO: Make CORS more restrictive
+// only allow requests from the web
+// client
+const string corsPolicyName = "cors";
+
+builder.Services.AddCors(o => 
+{
+  o.AddPolicy(corsPolicyName, p => 
+  {
+    p.AllowAnyOrigin()
+      .AllowAnyOrigin()
+      .AllowAnyMethod();
+  });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -56,6 +71,8 @@ if (app.Environment.IsProduction())
 {
   app.UseRateLimiter();
 }
+
+app.UseCors(corsPolicyName);
 
 app.UseHttpsRedirection();
 

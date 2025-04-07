@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltGen.Web", "AltGen.Web\Al
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltGen.Web.Client", "AltGen.Web.Client\AltGen.Web.Client.csproj", "{DCE07E79-23A4-490E-A796-EA140D2040C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltGen.Shared", "AltGen.Shared\AltGen.Shared.csproj", "{68D4BC5D-A6FE-41CF-B744-1DB83CCFBC89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{DCE07E79-23A4-490E-A796-EA140D2040C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCE07E79-23A4-490E-A796-EA140D2040C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCE07E79-23A4-490E-A796-EA140D2040C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68D4BC5D-A6FE-41CF-B744-1DB83CCFBC89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68D4BC5D-A6FE-41CF-B744-1DB83CCFBC89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68D4BC5D-A6FE-41CF-B744-1DB83CCFBC89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68D4BC5D-A6FE-41CF-B744-1DB83CCFBC89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

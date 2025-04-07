@@ -1,7 +1,9 @@
-namespace AltGen.Console.Generate;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
-// TODO: Use shared library version of this service
-sealed class AltGenService(HttpClient client) : IAltGenService
+namespace AltGen.Shared.Generate;
+
+public sealed class AltGenService(HttpClient client) : IAltGenService
 {
   static readonly JsonSerializerOptions JsonOptions = new()
   {
@@ -14,7 +16,7 @@ sealed class AltGenService(HttpClient client) : IAltGenService
     var byteContent = new ByteArrayContent(req.Image);
     byteContent.Headers.ContentType = new MediaTypeHeaderValue(req.ContentType);
 
-    var request = new HttpRequestMessage(HttpMethod.Post, $"{Constants.AltGenApiUri}/generate")
+    var request = new HttpRequestMessage(HttpMethod.Post, "/generate")
     {
       Content = new MultipartFormDataContent
       {
