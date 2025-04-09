@@ -1,0 +1,59 @@
+.config-button,
+.close-button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+}
+
+.config-button svg,
+.close-button svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+.providers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-group.row {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: bold;
+}

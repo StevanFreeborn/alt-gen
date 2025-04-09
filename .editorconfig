@@ -3,9 +3,6 @@ root = true
 # All files
 [*]
 indent_style = space
-
-# Xml files
-[*.xml]
 indent_size = 2
 
 # C# files
@@ -14,7 +11,6 @@ indent_size = 2
 #### Core EditorConfig Options ####
 
 # Indentation and spacing
-indent_size = 2
 tab_width = 2
 
 # New line preferences
