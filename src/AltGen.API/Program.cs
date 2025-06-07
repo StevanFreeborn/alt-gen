@@ -1,7 +1,6 @@
-using System.Globalization;
-using System.Threading.RateLimiting;
-
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddTelemetry();
 
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
